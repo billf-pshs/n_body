@@ -124,26 +124,39 @@ class _CelestialBodyAnimation {
   }
 }
 
-// OK, now note the impossible result.  Where did the extra energy come from?
-// Try adjusting the time granularity down by a factor of 10, then 100,
-// then 1000.
+// Now we try something symmetrical and periodic
 class _OrbitSceneState extends State<HomePage> {
   late final Timer timer;
   final watch = Stopwatch();
+  static const _v = 45.0;
   final animator = _Animator([
     _CelestialBodyAnimation(
         body: _CelestialBody(
-            position: const Offset(300, 300),
-            velocity: const Offset(-0, -2.25/100),
+            position: const Offset(100, 100),
+            velocity: const Offset(_v, 0),
             mass: 10000),
-        radius: 40,
+        radius: 15,
         color: Colors.red),
     _CelestialBodyAnimation(
         body: _CelestialBody(
+            position: const Offset(300, 100),
+            velocity: const Offset(0, _v),
+            mass: 10000),
+        radius: 15,
+        color: Colors.green),
+    _CelestialBodyAnimation(
+        body: _CelestialBody(
+            position: const Offset(300, 300),
+            velocity: const Offset(-_v, 0),
+            mass: 10000),
+        radius: 15,
+        color: Colors.yellow),
+    _CelestialBodyAnimation(
+        body: _CelestialBody(
             position: const Offset(100, 300),
-            velocity: const Offset(0, 2.25),
-            mass: 100),
-        radius: 20,
+            velocity: const Offset(0, -_v),
+            mass: 10000),
+        radius: 15,
         color: Colors.lightBlue),
   ]);
 
@@ -151,7 +164,7 @@ class _OrbitSceneState extends State<HomePage> {
 
   _OrbitSceneState() {
     simulator = _PhysicsSimulator(
-        timeGranularity: 0.001,
+        timeGranularity: 0.0001,
         bodies: animator.bodies.map((b) => b.body).toList(growable: false));
   }
 

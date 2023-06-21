@@ -26,3 +26,5 @@
 - Refactor PhysicsSimulator vs. Animation
 # v13
 - Experiment with two bodies; show limits of numerical methods
+# v14
+- Experiment with four symmetrical bodies, zero net momentum
