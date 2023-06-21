@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -32,9 +34,13 @@ class _CelestialBody {
   final Offset position;
   final Color color;
   final double radius;
+  final Offset velocity;
 
   _CelestialBody(
-      {required this.position, this.color = Colors.yellow, this.radius = 7});
+      {required this.position,
+      this.color = Colors.yellow,
+      this.radius = 7,
+      this.velocity = const Offset(0, 0)});
 
   void paint(Canvas canvas) {
     final fg = Paint()..color = color;
@@ -43,22 +49,49 @@ class _CelestialBody {
 }
 
 class _OrbitSceneState extends State<HomePage> {
+
+  final watch = Stopwatch();
+  late final Timer timer;
+
   final bodies = [
-    _CelestialBody(position: const Offset(200, 150), radius: 15),
+    _CelestialBody(
+        position: const Offset(200, 150),
+        radius: 15,
+        velocity: const Offset(10, 10)),
     _CelestialBody(
         position: const Offset(400, 150), color: Colors.lightBlue, radius: 20),
-    _CelestialBody(position: const Offset(300, 350), color: Colors.red),
+    _CelestialBody(
+        position: const Offset(300, 350),
+        color: Colors.red,
+        velocity: const Offset(-5, -15)),
   ];
+
+  @override
+  void initState() {
+    timer = Timer.periodic(Duration(milliseconds: (1000/60).round()), showFrame);
+    watch.start();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
+  void showFrame(Timer t) {
+    print(watch.elapsed);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: CustomPaint(size: Size.infinite, painter: _OrbitScenePainter(this))
-    );
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
+        ),
+        body: CustomPaint(
+            size: Size.infinite, painter: _OrbitScenePainter(this)));
   }
 }
 

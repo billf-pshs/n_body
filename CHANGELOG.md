@@ -12,3 +12,5 @@
 - Add radius
 # v6
 - Named arguments
+# v7
+- Velocity member, add timer and stopwatch
