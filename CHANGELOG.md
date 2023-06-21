@@ -8,3 +8,5 @@
 - Let celestial body position, color be configured
 # v4
 - Add a couple of celestial bodies
+# v5
+- Add radius

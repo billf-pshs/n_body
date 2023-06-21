@@ -31,21 +31,22 @@ class HomePage extends StatefulWidget {
 class _CelestialBody {
   final Offset position;
   final Color color;
+  final double radius;
 
-  _CelestialBody(this.position, this.color);
+  _CelestialBody(this.position, this.color, this.radius);
 
   void paint(Canvas canvas) {
     final fg = Paint()..color = color;
-    canvas.drawCircle(position, 5, fg);
+    canvas.drawCircle(position, radius, fg);
   }
 }
 
 class _OrbitSceneState extends State<HomePage> {
 
   final bodies = [
-    _CelestialBody(const Offset(200, 150), Colors.yellow),
-    _CelestialBody(const Offset(400, 150), Colors.lightBlue),
-    _CelestialBody(const Offset(300, 350), Colors.red),
+    _CelestialBody(const Offset(200, 150), Colors.yellow, 15),
+    _CelestialBody(const Offset(400, 150), Colors.lightBlue, 20),
+    _CelestialBody(const Offset(300, 350), Colors.red, 7),
   ];
 
   @override
