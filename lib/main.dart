@@ -42,7 +42,11 @@ class _CelestialBody {
 
 class _OrbitSceneState extends State<HomePage> {
 
-  final bodies = [ _CelestialBody(const Offset(200, 150), Colors.yellow) ];
+  final bodies = [
+    _CelestialBody(const Offset(200, 150), Colors.yellow),
+    _CelestialBody(const Offset(400, 150), Colors.lightBlue),
+    _CelestialBody(const Offset(300, 350), Colors.red),
+  ];
 
   @override
   Widget build(BuildContext context) {

@@ -6,3 +6,5 @@
 - Add a single, stationary celestial body
 # v3
 - Let celestial body position, color be configured
+# v4
+- Add a couple of celestial bodies
