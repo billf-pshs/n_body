@@ -10,3 +10,5 @@
 - Add a couple of celestial bodies
 # v5
 - Add radius
+# v6
+- Named arguments

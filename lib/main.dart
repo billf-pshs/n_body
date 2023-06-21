@@ -33,7 +33,8 @@ class _CelestialBody {
   final Color color;
   final double radius;
 
-  _CelestialBody(this.position, this.color, this.radius);
+  _CelestialBody(
+      {required this.position, this.color = Colors.yellow, this.radius = 7});
 
   void paint(Canvas canvas) {
     final fg = Paint()..color = color;
@@ -42,11 +43,11 @@ class _CelestialBody {
 }
 
 class _OrbitSceneState extends State<HomePage> {
-
   final bodies = [
-    _CelestialBody(const Offset(200, 150), Colors.yellow, 15),
-    _CelestialBody(const Offset(400, 150), Colors.lightBlue, 20),
-    _CelestialBody(const Offset(300, 350), Colors.red, 7),
+    _CelestialBody(position: const Offset(200, 150), radius: 15),
+    _CelestialBody(
+        position: const Offset(400, 150), color: Colors.lightBlue, radius: 20),
+    _CelestialBody(position: const Offset(300, 350), color: Colors.red),
   ];
 
   @override
@@ -62,7 +63,6 @@ class _OrbitSceneState extends State<HomePage> {
 }
 
 class _OrbitScenePainter extends CustomPainter {
-
   final _OrbitSceneState _state;
 
   _OrbitScenePainter(this._state);
