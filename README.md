@@ -10,5 +10,6 @@ that has almost no UI.
 
 The repository is tagged with release numbers, so that incremental
 development can be simulated in a classroom setting or a presentation.
-`flutter checkout v7`, for example, lets you see the seventh version
-of this highly incrementally-developed simulation.
+`git checkout v7`, for example, lets you see the seventh version
+of this highly incrementally-developed simulation.  `git checkout main`
+positions you to the latest version.

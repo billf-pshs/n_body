@@ -28,7 +28,18 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _OrbitSceneState();
 }
 
+class _CelestialBody {
+  final position = const Offset(200, 150);
+
+  void paint(Canvas canvas) {
+    final fg = Paint()..color = Colors.white;
+    canvas.drawCircle(position, 5, fg);
+  }
+}
+
 class _OrbitSceneState extends State<HomePage> {
+
+  final bodies = [ _CelestialBody() ];
 
   @override
   Widget build(BuildContext context) {
@@ -53,11 +64,10 @@ class _OrbitScenePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final bg = Paint();
-    bg.color = Colors.black;
-    bg.style = PaintingStyle.fill;
-    // Dart language tip:  A shortcut for the preceeding three lines is:
-    // final bg = Paint()..color = Colors.black, style = PaintingStyle.fill;
+    final bg = Paint()..color = Colors.black;
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), bg);
+    for (final body in _state.bodies) {
+      body.paint(canvas);
+    }
   }
 }
