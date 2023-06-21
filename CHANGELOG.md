@@ -14,3 +14,5 @@
 - Named arguments
 # v7
 - Velocity member, add timer and stopwatch
+# v8
+- Animate velocity

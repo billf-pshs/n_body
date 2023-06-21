@@ -31,7 +31,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _CelestialBody {
-  final Offset position;
+  Offset position;
   final Color color;
   final double radius;
   final Offset velocity;
@@ -42,6 +42,10 @@ class _CelestialBody {
       this.radius = 7,
       this.velocity = const Offset(0, 0)});
 
+  void advanceBy(double deltaT) {
+    position = position + velocity * deltaT;
+  }
+
   void paint(Canvas canvas) {
     final fg = Paint()..color = color;
     canvas.drawCircle(position, radius, fg);
@@ -51,6 +55,7 @@ class _CelestialBody {
 class _OrbitSceneState extends State<HomePage> {
 
   final watch = Stopwatch();
+  late Duration lastTick;
   late final Timer timer;
 
   final bodies = [
@@ -70,6 +75,7 @@ class _OrbitSceneState extends State<HomePage> {
   void initState() {
     timer = Timer.periodic(Duration(milliseconds: (1000/60).round()), showFrame);
     watch.start();
+    lastTick = watch.elapsed;
     super.initState();
   }
 
@@ -80,7 +86,14 @@ class _OrbitSceneState extends State<HomePage> {
   }
 
   void showFrame(Timer t) {
-    print(watch.elapsed);
+    final now = watch.elapsed;
+    double seconds = (now - lastTick).inMicroseconds / 1000000;
+    setState(() {
+      for (final b in bodies) {
+        b.advanceBy(seconds);
+      }
+    });
+    lastTick = now;
   }
 
   @override
