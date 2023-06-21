@@ -46,7 +46,7 @@ class _CelestialBody {
       this.velocity = const Offset(0, 0),
       required this.mass});
 
-  void advanceBy(_OrbitSceneState universe, double deltaT) {
+  void updateVelocity(_OrbitSceneState universe, double deltaT) {
     for (final b in universe.bodies) {
       if (b != this) {
         final Offset dist = b.position - position;
@@ -57,9 +57,10 @@ class _CelestialBody {
         velocity += dist.scale(scaleFactor, scaleFactor);
       }
     }
-    position = position + velocity * deltaT;
+  }
 
-    // Student question: The velocity calculation is wrong.  Why?
+  void advanceBy(double deltaT) {
+    position = position + velocity * deltaT;
   }
 
   void paint(Canvas canvas) {
@@ -111,7 +112,10 @@ class _OrbitSceneState extends State<HomePage> {
     double seconds = (now - lastTick).inMicroseconds / 1000000;
     setState(() {
       for (final b in bodies) {
-        b.advanceBy(this, seconds);
+        b.updateVelocity(this, seconds);
+      }
+      for (final b in bodies) {
+        b.advanceBy(seconds);
       }
     });
     lastTick = now;

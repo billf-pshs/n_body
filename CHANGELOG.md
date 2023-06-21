@@ -18,3 +18,5 @@
 - Animate velocity
 # v9
 - Add mass and gravity
+# v10
+- Fix velocity computation
