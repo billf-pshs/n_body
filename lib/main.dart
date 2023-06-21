@@ -22,7 +22,11 @@ class MyApp extends StatelessWidget {
   }
 }
 
-const double _G = 47.7;    // The gravitational constant
+/// The gravitational constant
+const double _G = 47.7;
+
+/// How fine we do our numerical integration, in seconds.
+const double integrationSpan = 0.0001;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -34,6 +38,7 @@ class HomePage extends StatefulWidget {
 
 class _CelestialBody {
   Offset position;
+  Offset drawPosition;
   final Color color;
   final double radius;
   Offset velocity;
@@ -44,7 +49,7 @@ class _CelestialBody {
       this.color = Colors.yellow,
       this.radius = 7,
       this.velocity = const Offset(0, 0),
-      required this.mass});
+      required this.mass}) : drawPosition = position;
 
   void updateVelocity(_OrbitSceneState universe, double deltaT) {
     for (final b in universe.bodies) {
@@ -63,15 +68,20 @@ class _CelestialBody {
     position = position + velocity * deltaT;
   }
 
+  void setDrawPosition(double pendingIntegration) =>
+      drawPosition = position + velocity * pendingIntegration;
+
   void paint(Canvas canvas) {
     final fg = Paint()..color = color;
-    canvas.drawCircle(position, radius, fg);
+    canvas.drawCircle(drawPosition, radius, fg);
   }
 }
 
 class _OrbitSceneState extends State<HomePage> {
   final watch = Stopwatch();
   late Duration lastTick;
+  double integrationTime = 0;
+  double pendingIntegration= 0;
   late final Timer timer;
 
   final bodies = [
@@ -109,16 +119,47 @@ class _OrbitSceneState extends State<HomePage> {
 
   void showFrame(Timer t) {
     final now = watch.elapsed;
-    double seconds = (now - lastTick).inMicroseconds / 1000000;
-    setState(() {
-      for (final b in bodies) {
-        b.updateVelocity(this, seconds);
+    double animationDelta = (now - lastTick).inMicroseconds / 1000000;
+    final integrationGoal = integrationTime + pendingIntegration + animationDelta;
+    for (;;) {
+      final next = integrationTime + integrationSpan;
+      if (next > integrationGoal) {
+        break;
       }
       for (final b in bodies) {
-        b.advanceBy(seconds);
+        b.updateVelocity(this, integrationSpan);
+      }
+      for (final b in bodies) {
+        b.advanceBy(integrationSpan);
+      }
+      integrationTime = next;
+    }
+
+    // Now,  integrationTime is <= the current animation time.  We record
+    // the difference in pendingIntegration.
+    pendingIntegration = integrationGoal - integrationTime;
+    assert(pendingIntegration >= 0 && pendingIntegration < integrationSpan * 1.0001);
+    setState(() {
+      for (final b in bodies) {
+        b.setDrawPosition(pendingIntegration);
       }
     });
     lastTick = now;
+
+    // Student question:  What's wrong with this code, from a design perspective?
+    // How well does it obey the separation of concerns principle?
+    //
+    // Answer:  Terribly.  _CelestialBody has two main concerns:  The numerical
+    // integration, and the animation.  _OrbitSceneState has become sorta a
+    // grab-bag.  We have pretty high coupling between _CelestialBody and
+    // _OrbitSceneState.  _OrbitSceneState has an unhelpful name.
+    //
+    // This is perfectly normal.  Iterative design and development is great,
+    // PROVIDED THAT you're willing to refactor when this happens.
+    //
+    // Note that Single Responsibility is the first principle in the SOLID
+    // design principles, where are pretty much OO 101.  Robert C. Martin
+    // would be displeased if we let this stand.
   }
 
   @override

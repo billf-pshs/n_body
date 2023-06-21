@@ -20,3 +20,5 @@
 - Add mass and gravity
 # v10
 - Fix velocity computation
+# v11
+- Allow numerical integration at different granularity than animation
