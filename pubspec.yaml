@@ -19,3 +19,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/firefly.jpg
+    - assets/earth.png
+    - assets/saturn.png
+    - assets/sun.png

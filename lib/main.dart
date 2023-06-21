@@ -1,12 +1,32 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'graph.dart';
 
-void main() {
+late final ui.Image background;
+late final ui.Image earth;
+late final ui.Image saturn;
+late final ui.Image sun;
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  background = await loadImage('assets/firefly.jpg');
+  earth = await loadImage('assets/earth.png');
+  saturn = await loadImage('assets/saturn.png');
+  sun = await loadImage('assets/sun.png');
   runApp(const MyApp());
+}
+
+Future<ui.Image> loadImage(String assetName) async {
+  final encoded = (await rootBundle.load(assetName)).buffer.asUint8List();
+  final des = await ui.ImageDescriptor.encoded(
+      await ImmutableBuffer.fromUint8List(encoded));
+  final ui.FrameInfo fi = await (await des.instantiateCodec()).getNextFrame();
+  return fi.image;
 }
 
 class MyApp extends StatelessWidget {
@@ -128,22 +148,47 @@ class _Animator {
   }
 }
 
-class _CelestialBodyAnimation {
+abstract class _CelestialBodyAnimation {
   final _CelestialBody body;
   Offset drawPosition;
-  final Color color;
-  final double radius;
 
-  _CelestialBodyAnimation(
-      {required this.body, this.color = Colors.yellow, this.radius = 7})
-      : drawPosition = body.position;
+  _CelestialBodyAnimation({required this.body}) : drawPosition = body.position;
 
   void setDrawPosition(double pendingIntegration) =>
       drawPosition = body.position + body.velocity * pendingIntegration;
 
+  void paint(Canvas canvas);
+}
+
+class _CelestialBodyCircleAnimation extends _CelestialBodyAnimation {
+  final Color color;
+  final double radius;
+
+  _CelestialBodyCircleAnimation(
+      {required super.body, this.color = Colors.yellow, this.radius = 7});
+
+  @override
   void paint(Canvas canvas) {
     final fg = Paint()..color = color;
     canvas.drawCircle(drawPosition, radius, fg);
+  }
+}
+
+class _CelestialBodyImageAnimation extends _CelestialBodyAnimation {
+  final ui.Image image;
+  final double radius;
+
+  _CelestialBodyImageAnimation(
+      {required super.body, required this.image, this.radius = 7});
+
+  @override
+  void paint(Canvas canvas) {
+    canvas.drawImageRect(
+        image,
+        Rect.fromLTWH(0, 0, image.width + 0, image.height + 0),
+        Rect.fromLTWH(drawPosition.dx - radius, drawPosition.dy - radius,
+            2 * radius + 1, 2 * radius + 1),
+        ui.Paint());
   }
 }
 
@@ -151,38 +196,43 @@ class _CelestialBodyAnimation {
 class _OrbitSceneState extends State<HomePage> {
   late final Timer timer;
   final watch = Stopwatch();
-  static const _v = 45.0;
-  static final rand = Random();
-  static const double rf = 1.00;
   final animator = _Animator([
-    _CelestialBodyAnimation(
+    _CelestialBodyImageAnimation(
+      body: _CelestialBody(
+        position: const Offset(600, 350),
+        velocity: const Offset(0, 0),
+        mass: 1000000
+      ),
+      image: sun,
+      radius: 45
+    ),
+    _CelestialBodyImageAnimation(
         body: _CelestialBody(
-            position: const Offset(100, 100),
-            velocity: const Offset(_v, 0),
-            mass: 10000 + rf * (rand.nextDouble() - 0.5)),
-        radius: 15,
-        color: Colors.red),
-    _CelestialBodyAnimation(
+            position: const Offset(450, 350),
+            velocity: const Offset(0, 600),
+            mass: 1000
+        ),
+        image: earth,
+        radius: 25
+    ),
+    /*
+    _CelestialBodyImageAnimation(
         body: _CelestialBody(
-            position: const Offset(300, 100),
-            velocity: const Offset(0, _v),
-            mass: 10000 + rf * (rand.nextDouble() - 0.5)),
+            position: const Offset(250, 350),
+            velocity: const Offset(0, 400),
+            mass: 5000
+        ),
+        image: saturn,
+        radius: 35
+    ),
+    _CelestialBodyCircleAnimation(
+        body: _CelestialBody(
+            position: const Offset(100, 350),
+            velocity: const Offset(0, 100),
+            mass: 10),
         radius: 15,
         color: Colors.green),
-    _CelestialBodyAnimation(
-        body: _CelestialBody(
-            position: const Offset(300, 300),
-            velocity: const Offset(-_v, 0),
-            mass: 10000 + rf * (rand.nextDouble() - 0.5)),
-        radius: 15,
-        color: Colors.yellow),
-    _CelestialBodyAnimation(
-        body: _CelestialBody(
-            position: const Offset(100, 300),
-            velocity: const Offset(0, -_v),
-            mass: 10000 + rf * (rand.nextDouble() - 0.5)),
-        radius: 15,
-        color: Colors.lightBlue),
+*/
   ]);
 
   late final _PhysicsSimulator simulator;
@@ -233,6 +283,11 @@ class _OrbitScenePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final bg = Paint()..color = Colors.black;
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), bg);
+    canvas.drawImageRect(
+        background,
+        Rect.fromLTWH(0, 0, background.width + 0, background.height + 0),
+        Rect.fromLTWH(0, 0, size.width, size.height),
+        ui.Paint());
     _state.animator.paintAll(canvas);
   }
 }
