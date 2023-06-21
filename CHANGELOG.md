@@ -16,3 +16,5 @@
 - Velocity member, add timer and stopwatch
 # v8
 - Animate velocity
+# v9
+- Add mass and gravity

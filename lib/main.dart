@@ -22,6 +22,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
+const double _G = 47.7;    // The gravitational constant
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
   final String title;
@@ -34,16 +36,30 @@ class _CelestialBody {
   Offset position;
   final Color color;
   final double radius;
-  final Offset velocity;
+  Offset velocity;
+  final double mass;
 
   _CelestialBody(
       {required this.position,
       this.color = Colors.yellow,
       this.radius = 7,
-      this.velocity = const Offset(0, 0)});
+      this.velocity = const Offset(0, 0),
+      required this.mass});
 
-  void advanceBy(double deltaT) {
+  void advanceBy(_OrbitSceneState universe, double deltaT) {
+    for (final b in universe.bodies) {
+      if (b != this) {
+        final Offset dist = b.position - position;
+        // F = G (m1 m2) / d^2
+        // F = m a, so a = F / M = G m2 / d^2
+        final a = _G * b.mass / dist.distanceSquared;
+        final scaleFactor = deltaT * a / dist.distance;
+        velocity += dist.scale(scaleFactor, scaleFactor);
+      }
+    }
     position = position + velocity * deltaT;
+
+    // Student question: The velocity calculation is wrong.  Why?
   }
 
   void paint(Canvas canvas) {
@@ -53,7 +69,6 @@ class _CelestialBody {
 }
 
 class _OrbitSceneState extends State<HomePage> {
-
   final watch = Stopwatch();
   late Duration lastTick;
   late final Timer timer;
@@ -62,18 +77,24 @@ class _OrbitSceneState extends State<HomePage> {
     _CelestialBody(
         position: const Offset(200, 150),
         radius: 15,
-        velocity: const Offset(10, 10)),
+        velocity: const Offset(10, 10),
+        mass: 15 * 15),
     _CelestialBody(
-        position: const Offset(400, 150), color: Colors.lightBlue, radius: 20),
+        position: const Offset(400, 150),
+        color: Colors.lightBlue,
+        radius: 20,
+        mass: 20 * 20),
     _CelestialBody(
         position: const Offset(300, 350),
         color: Colors.red,
-        velocity: const Offset(-5, -15)),
+        velocity: const Offset(-5, -15),
+        mass: 5 * 5),
   ];
 
   @override
   void initState() {
-    timer = Timer.periodic(Duration(milliseconds: (1000/60).round()), showFrame);
+    timer =
+        Timer.periodic(Duration(milliseconds: (1000 / 60).round()), showFrame);
     watch.start();
     lastTick = watch.elapsed;
     super.initState();
@@ -90,7 +111,7 @@ class _OrbitSceneState extends State<HomePage> {
     double seconds = (now - lastTick).inMicroseconds / 1000000;
     setState(() {
       for (final b in bodies) {
-        b.advanceBy(seconds);
+        b.advanceBy(this, seconds);
       }
     });
     lastTick = now;
