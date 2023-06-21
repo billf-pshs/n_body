@@ -25,9 +25,6 @@ class MyApp extends StatelessWidget {
 /// The gravitational constant
 const double _G = 47.7;
 
-/// How fine we do our numerical integration, in seconds.
-const double integrationSpan = 0.0001;
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
   final String title;
@@ -36,23 +33,44 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _OrbitSceneState();
 }
 
+class _PhysicsSimulator {
+  final List<_CelestialBody> bodies;
+  final double timeGranularity;
+  double currentTime = 0;
+
+  _PhysicsSimulator({required this.bodies, required this.timeGranularity});
+
+  /// Advance to the latest possible time <= the time argument
+  /// Return the amount of time left over.
+  double advanceTo(double time) {
+    for (;;) {
+      final next = currentTime + timeGranularity;
+      if (next > time) {
+        return time - currentTime;
+      }
+      for (final b in bodies) {
+        b.updateVelocity(bodies, timeGranularity);
+      }
+      for (final b in bodies) {
+        b.updatePosition(timeGranularity);
+      }
+      currentTime = next;
+    }
+  }
+}
+
 class _CelestialBody {
   Offset position;
-  Offset drawPosition;
-  final Color color;
-  final double radius;
   Offset velocity;
   final double mass;
 
   _CelestialBody(
       {required this.position,
-      this.color = Colors.yellow,
-      this.radius = 7,
       this.velocity = const Offset(0, 0),
-      required this.mass}) : drawPosition = position;
+      required this.mass});
 
-  void updateVelocity(_OrbitSceneState universe, double deltaT) {
-    for (final b in universe.bodies) {
+  void updateVelocity(List<_CelestialBody> universe, double deltaT) {
+    for (final b in universe) {
       if (b != this) {
         final Offset dist = b.position - position;
         // F = G (m1 m2) / d^2
@@ -64,12 +82,41 @@ class _CelestialBody {
     }
   }
 
-  void advanceBy(double deltaT) {
+  void updatePosition(double deltaT) {
     position = position + velocity * deltaT;
   }
+}
+
+class _Animator {
+  final List<_CelestialBodyAnimation> bodies;
+
+  _Animator(this.bodies);
+
+  void setPositions(double leftOver) {
+    for (final b in bodies) {
+      b.setDrawPosition(leftOver);
+    }
+  }
+
+  void paintAll(Canvas canvas) {
+    for (final b in bodies) {
+      b.paint(canvas);
+    }
+  }
+}
+
+class _CelestialBodyAnimation {
+  final _CelestialBody body;
+  Offset drawPosition;
+  final Color color;
+  final double radius;
+
+  _CelestialBodyAnimation(
+      {required this.body, this.color = Colors.yellow, this.radius = 7})
+      : drawPosition = body.position;
 
   void setDrawPosition(double pendingIntegration) =>
-      drawPosition = position + velocity * pendingIntegration;
+      drawPosition = body.position + body.velocity * pendingIntegration;
 
   void paint(Canvas canvas) {
     final fg = Paint()..color = color;
@@ -78,36 +125,43 @@ class _CelestialBody {
 }
 
 class _OrbitSceneState extends State<HomePage> {
-  final watch = Stopwatch();
-  late Duration lastTick;
-  double integrationTime = 0;
-  double pendingIntegration= 0;
   late final Timer timer;
+  final watch = Stopwatch();
+  final animator = _Animator([
+    _CelestialBodyAnimation(
+        body: _CelestialBody(
+            position: const Offset(200, 150),
+            velocity: const Offset(10, 10),
+            mass: 15 * 15),
+        radius: 15),
+    _CelestialBodyAnimation(
+      body: _CelestialBody(position: const Offset(400, 150), mass: 20 * 20),
+      color: Colors.lightBlue,
+      radius: 20,
+    ),
+    _CelestialBodyAnimation(
+      body: _CelestialBody(
+          position: const Offset(300, 350),
+          velocity: const Offset(-5, -15),
+          mass: 5 * 5),
+      color: Colors.red,
+    ),
+  ]);
 
-  final bodies = [
-    _CelestialBody(
-        position: const Offset(200, 150),
-        radius: 15,
-        velocity: const Offset(10, 10),
-        mass: 15 * 15),
-    _CelestialBody(
-        position: const Offset(400, 150),
-        color: Colors.lightBlue,
-        radius: 20,
-        mass: 20 * 20),
-    _CelestialBody(
-        position: const Offset(300, 350),
-        color: Colors.red,
-        velocity: const Offset(-5, -15),
-        mass: 5 * 5),
-  ];
+  late final _PhysicsSimulator simulator;
+
+  _OrbitSceneState() {
+    simulator = _PhysicsSimulator(timeGranularity: 0.001,
+        bodies: animator.bodies.map((b) => b.body).toList(growable: false)
+    );
+  }
+
 
   @override
   void initState() {
     timer =
         Timer.periodic(Duration(milliseconds: (1000 / 60).round()), showFrame);
     watch.start();
-    lastTick = watch.elapsed;
     super.initState();
   }
 
@@ -119,47 +173,10 @@ class _OrbitSceneState extends State<HomePage> {
 
   void showFrame(Timer t) {
     final now = watch.elapsed;
-    double animationDelta = (now - lastTick).inMicroseconds / 1000000;
-    final integrationGoal = integrationTime + pendingIntegration + animationDelta;
-    for (;;) {
-      final next = integrationTime + integrationSpan;
-      if (next > integrationGoal) {
-        break;
-      }
-      for (final b in bodies) {
-        b.updateVelocity(this, integrationSpan);
-      }
-      for (final b in bodies) {
-        b.advanceBy(integrationSpan);
-      }
-      integrationTime = next;
-    }
-
-    // Now,  integrationTime is <= the current animation time.  We record
-    // the difference in pendingIntegration.
-    pendingIntegration = integrationGoal - integrationTime;
-    assert(pendingIntegration >= 0 && pendingIntegration < integrationSpan * 1.0001);
+    final leftOver = simulator.advanceTo(now.inMicroseconds / 1000000);
     setState(() {
-      for (final b in bodies) {
-        b.setDrawPosition(pendingIntegration);
-      }
+      animator.setPositions(leftOver);
     });
-    lastTick = now;
-
-    // Student question:  What's wrong with this code, from a design perspective?
-    // How well does it obey the separation of concerns principle?
-    //
-    // Answer:  Terribly.  _CelestialBody has two main concerns:  The numerical
-    // integration, and the animation.  _OrbitSceneState has become sorta a
-    // grab-bag.  We have pretty high coupling between _CelestialBody and
-    // _OrbitSceneState.  _OrbitSceneState has an unhelpful name.
-    //
-    // This is perfectly normal.  Iterative design and development is great,
-    // PROVIDED THAT you're willing to refactor when this happens.
-    //
-    // Note that Single Responsibility is the first principle in the SOLID
-    // design principles, where are pretty much OO 101.  Robert C. Martin
-    // would be displeased if we let this stand.
   }
 
   @override
@@ -186,8 +203,6 @@ class _OrbitScenePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final bg = Paint()..color = Colors.black;
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), bg);
-    for (final body in _state.bodies) {
-      body.paint(canvas);
-    }
+    _state.animator.paintAll(canvas);
   }
 }

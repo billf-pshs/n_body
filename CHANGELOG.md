@@ -22,3 +22,5 @@
 - Fix velocity computation
 # v11
 - Allow numerical integration at different granularity than animation
+# v12
+- Refactor PhysicsSimulator vs. Animation
