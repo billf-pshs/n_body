@@ -24,3 +24,5 @@
 - Allow numerical integration at different granularity than animation
 # v12
 - Refactor PhysicsSimulator vs. Animation
+# v13
+- Experiment with two bodies; show limits of numerical methods

@@ -74,7 +74,7 @@ class _CelestialBody {
       if (b != this) {
         final Offset dist = b.position - position;
         // F = G (m1 m2) / d^2
-        // F = m a, so a = F / M = G m2 / d^2
+        // F = m a, so a = F / m = G m2 / d^2
         final a = _G * b.mass / dist.distanceSquared;
         final scaleFactor = deltaT * a / dist.distance;
         velocity += dist.scale(scaleFactor, scaleFactor);
@@ -124,38 +124,36 @@ class _CelestialBodyAnimation {
   }
 }
 
+// OK, now note the impossible result.  Where did the extra energy come from?
+// Try adjusting the time granularity down by a factor of 10, then 100,
+// then 1000.
 class _OrbitSceneState extends State<HomePage> {
   late final Timer timer;
   final watch = Stopwatch();
   final animator = _Animator([
     _CelestialBodyAnimation(
         body: _CelestialBody(
-            position: const Offset(200, 150),
-            velocity: const Offset(10, 10),
-            mass: 15 * 15),
-        radius: 15),
+            position: const Offset(300, 300),
+            velocity: const Offset(-0, -2.25/100),
+            mass: 10000),
+        radius: 40,
+        color: Colors.red),
     _CelestialBodyAnimation(
-      body: _CelestialBody(position: const Offset(400, 150), mass: 20 * 20),
-      color: Colors.lightBlue,
-      radius: 20,
-    ),
-    _CelestialBodyAnimation(
-      body: _CelestialBody(
-          position: const Offset(300, 350),
-          velocity: const Offset(-5, -15),
-          mass: 5 * 5),
-      color: Colors.red,
-    ),
+        body: _CelestialBody(
+            position: const Offset(100, 300),
+            velocity: const Offset(0, 2.25),
+            mass: 100),
+        radius: 20,
+        color: Colors.lightBlue),
   ]);
 
   late final _PhysicsSimulator simulator;
 
   _OrbitSceneState() {
-    simulator = _PhysicsSimulator(timeGranularity: 0.001,
-        bodies: animator.bodies.map((b) => b.body).toList(growable: false)
-    );
+    simulator = _PhysicsSimulator(
+        timeGranularity: 0.001,
+        bodies: animator.bodies.map((b) => b.body).toList(growable: false));
   }
-
 
   @override
   void initState() {
