@@ -28,3 +28,6 @@
 - Experiment with two bodies; show limits of numerical methods
 # v14
 - Experiment with four symmetrical bodies, zero net momentum
+# v15
+- Add in a small random difference in mass
+- Graph acceleration

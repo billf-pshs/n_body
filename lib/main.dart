@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
+
+import 'graph.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,13 +15,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter N-Body Problem',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const HomePage(title: 'N-Body Problem'),
-    );
+        title: 'Flutter N-Body Problem',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              title: const Text('Flutter N-Body Problem'),
+            ),
+            body: Column(children: [
+              const Expanded(flex: 2, child: HomePage(title: 'N-Body Problem')),
+              (graphData.isEmpty
+                  ? Container()
+                  : const Expanded(child: Graph())),
+            ])));
   }
 }
 
@@ -48,8 +60,15 @@ class _PhysicsSimulator {
       if (next > time) {
         return time - currentTime;
       }
+      int i = 0;
+      if (graphData.isNotEmpty) {
+        graphData[i++].points.add(currentTime);
+      }
       for (final b in bodies) {
-        b.updateVelocity(bodies, timeGranularity);
+        final acc = b.updateVelocity(bodies, timeGranularity);
+        if (graphData.isNotEmpty) {
+          graphData[i++].points.add(acc.distance);
+        }
       }
       for (final b in bodies) {
         b.updatePosition(timeGranularity);
@@ -69,17 +88,21 @@ class _CelestialBody {
       this.velocity = const Offset(0, 0),
       required this.mass});
 
-  void updateVelocity(List<_CelestialBody> universe, double deltaT) {
+  // Returns the acceleration vector
+  Offset updateVelocity(List<_CelestialBody> universe, double deltaT) {
+    var acceleration = Offset.zero;
     for (final b in universe) {
       if (b != this) {
         final Offset dist = b.position - position;
         // F = G (m1 m2) / d^2
         // F = m a, so a = F / m = G m2 / d^2
         final a = _G * b.mass / dist.distanceSquared;
-        final scaleFactor = deltaT * a / dist.distance;
-        velocity += dist.scale(scaleFactor, scaleFactor);
+        final scaleFactor = a / dist.distance;
+        acceleration += dist.scale(scaleFactor, scaleFactor);
       }
     }
+    velocity += acceleration.scale(deltaT, deltaT);
+    return acceleration;
   }
 
   void updatePosition(double deltaT) {
@@ -129,33 +152,35 @@ class _OrbitSceneState extends State<HomePage> {
   late final Timer timer;
   final watch = Stopwatch();
   static const _v = 45.0;
+  static final rand = Random();
+  static const double rf = 1.00;
   final animator = _Animator([
     _CelestialBodyAnimation(
         body: _CelestialBody(
             position: const Offset(100, 100),
             velocity: const Offset(_v, 0),
-            mass: 10000),
+            mass: 10000 + rf * (rand.nextDouble() - 0.5)),
         radius: 15,
         color: Colors.red),
     _CelestialBodyAnimation(
         body: _CelestialBody(
             position: const Offset(300, 100),
             velocity: const Offset(0, _v),
-            mass: 10000),
+            mass: 10000 + rf * (rand.nextDouble() - 0.5)),
         radius: 15,
         color: Colors.green),
     _CelestialBodyAnimation(
         body: _CelestialBody(
             position: const Offset(300, 300),
             velocity: const Offset(-_v, 0),
-            mass: 10000),
+            mass: 10000 + rf * (rand.nextDouble() - 0.5)),
         radius: 15,
         color: Colors.yellow),
     _CelestialBodyAnimation(
         body: _CelestialBody(
             position: const Offset(100, 300),
             velocity: const Offset(0, -_v),
-            mass: 10000),
+            mass: 10000 + rf * (rand.nextDouble() - 0.5)),
         radius: 15,
         color: Colors.lightBlue),
   ]);
@@ -192,13 +217,7 @@ class _OrbitSceneState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title),
-        ),
-        body: CustomPaint(
-            size: Size.infinite, painter: _OrbitScenePainter(this)));
+    return CustomPaint(size: Size.infinite, painter: _OrbitScenePainter(this));
   }
 }
 
