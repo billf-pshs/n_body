@@ -29,17 +29,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _CelestialBody {
-  final position = const Offset(200, 150);
+  final Offset position;
+  final Color color;
+
+  _CelestialBody(this.position, this.color);
 
   void paint(Canvas canvas) {
-    final fg = Paint()..color = Colors.white;
+    final fg = Paint()..color = color;
     canvas.drawCircle(position, 5, fg);
   }
 }
 
 class _OrbitSceneState extends State<HomePage> {
 
-  final bodies = [ _CelestialBody() ];
+  final bodies = [ _CelestialBody(const Offset(200, 150), Colors.yellow) ];
 
   @override
   Widget build(BuildContext context) {
