@@ -33,3 +33,5 @@
 - Graph acceleration
 # v16
 - Use images
+# v17
+- Add feature for zero net momentum

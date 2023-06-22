@@ -133,7 +133,19 @@ class _CelestialBody {
 class _Animator {
   final List<_CelestialBodyAnimation> bodies;
 
-  _Animator(this.bodies);
+  _Animator({required this.bodies, bool zeroMomentum = false}) {
+    if (zeroMomentum) {
+      Offset momentum = Offset.zero;
+      var biggest = bodies[0].body;
+      for (final b in bodies) {
+        momentum += b.body.velocity * b.body.mass;
+        if (b.body.mass > biggest.mass) {
+          biggest = b.body;
+        }
+      }
+      biggest.velocity -= momentum / biggest.mass;
+    }
+  }
 
   void setPositions(double leftOver) {
     for (final b in bodies) {
@@ -196,35 +208,28 @@ class _CelestialBodyImageAnimation extends _CelestialBodyAnimation {
 class _OrbitSceneState extends State<HomePage> {
   late final Timer timer;
   final watch = Stopwatch();
-  final animator = _Animator([
+  final animator = _Animator(zeroMomentum: true, bodies: [
     _CelestialBodyImageAnimation(
-      body: _CelestialBody(
-        position: const Offset(600, 350),
-        velocity: const Offset(0, 0),
-        mass: 1000000
-      ),
-      image: sun,
-      radius: 45
-    ),
+        body: _CelestialBody(
+            position: const Offset(600, 350),
+            velocity: const Offset(0, 0),
+            mass: 1000000),
+        image: sun,
+        radius: 45),
     _CelestialBodyImageAnimation(
         body: _CelestialBody(
             position: const Offset(450, 350),
             velocity: const Offset(0, 600),
-            mass: 1000
-        ),
+            mass: 1000),
         image: earth,
-        radius: 25
-    ),
-    /*
+        radius: 25),
     _CelestialBodyImageAnimation(
         body: _CelestialBody(
             position: const Offset(250, 350),
             velocity: const Offset(0, 400),
-            mass: 5000
-        ),
+            mass: 5000),
         image: saturn,
-        radius: 35
-    ),
+        radius: 35),
     _CelestialBodyCircleAnimation(
         body: _CelestialBody(
             position: const Offset(100, 350),
@@ -232,7 +237,6 @@ class _OrbitSceneState extends State<HomePage> {
             mass: 10),
         radius: 15,
         color: Colors.green),
-*/
   ]);
 
   late final _PhysicsSimulator simulator;
