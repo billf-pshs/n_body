@@ -35,3 +35,5 @@
 - Use images
 # v17
 - Add feature for zero net momentum
+# v18
+- Less stable initial configuration

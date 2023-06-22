@@ -225,8 +225,8 @@ class _OrbitSceneState extends State<HomePage> {
         radius: 25),
     _CelestialBodyImageAnimation(
         body: _CelestialBody(
-            position: const Offset(250, 350),
-            velocity: const Offset(0, 400),
+            position: const Offset(350, 350),
+            velocity: const Offset(0, 300),
             mass: 5000),
         image: saturn,
         radius: 35),
