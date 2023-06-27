@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui' as ui;
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -41,16 +42,10 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         home: Scaffold(
-            appBar: AppBar(
-              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-              title: const Text('Flutter N-Body Problem'),
-            ),
             body: Column(children: [
-              const Expanded(flex: 2, child: HomePage(title: 'N-Body Problem')),
-              (graphData.isEmpty
-                  ? Container()
-                  : const Expanded(child: Graph())),
-            ])));
+          const Expanded(flex: 2, child: HomePage(title: 'N-Body Problem')),
+          (graphData.isEmpty ? Container() : const Expanded(child: Graph())),
+        ])));
   }
 }
 
@@ -276,6 +271,8 @@ class _OrbitSceneState extends State<HomePage> {
 }
 
 class _OrbitScenePainter extends CustomPainter {
+  static final scale = (Platform.isAndroid || Platform.isIOS) ? .65 : 1.0;
+
   final _OrbitSceneState _state;
 
   _OrbitScenePainter(this._state);
@@ -285,6 +282,10 @@ class _OrbitScenePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (scale != 1.0) {
+      canvas.scale(scale);
+      size = size / scale;
+    }
     final bg = Paint()..color = Colors.black;
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), bg);
     canvas.drawImageRect(

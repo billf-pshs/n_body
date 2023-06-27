@@ -37,3 +37,5 @@
 - Add feature for zero net momentum
 # v18
 - Less stable initial configuration
+# v19
+- Get rid of title bar; hack in display scaling on Android
