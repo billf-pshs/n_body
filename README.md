@@ -13,3 +13,5 @@ development can be simulated in a classroom setting or a presentation.
 `git checkout v7`, for example, lets you see the seventh version
 of this highly incrementally-developed simulation.  `git checkout main`
 positions you to the latest version.
+
+![](./doc/images/screenshot.jpg)
