@@ -14,7 +14,7 @@ development can be simulated in a classroom setting or a presentation.
 of this highly incrementally-developed simulation.  `git checkout main`
 positions you to the latest version.
 
-![](./doc/images/screenshot.jpg)
+![](./docs/images/screenshot.jpg)
 
 A public webpage is available at https://billf-pshs.github.io/n_body/, and
 you can run the web version at

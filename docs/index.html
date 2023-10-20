@@ -1,7 +1,107 @@
+<!DOTYPE html>
 <html>
+<head>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  font-size: 16pt;
+  color: rgb(30,30,30);
+}
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+</head>
 <body>
-Hello, world.
+<p>&nbsp;
+<h1>
+<code>n_body</code> Flutter program
+</h1>
 <p>
-To run the application, go to <a href="run/">https://billf-pshs.github.io/n_body/run/</a>.
+Hello!  This web site to introduces the <code>n_body</code> program.  This
+is a little program written in Flutter, meant to inspire people learning
+programming.  This program plays with physics, astronomy, orbital dynamics,
+and numerical simulation.  It can be built for the web, for desktop (MacOS,
+Windows and Linux), and as a mobile app (Android or Ios).
+<p>
+You should be able to run the application, at
+<a href="run/">https://billf-pshs.github.io/n_body/run/</a>, or by clicking
+the image below.
+<p>
+<a href="run/">
+<img src="images/screenshot.jpg" width="504" height="321.5" class="center"/>
+</a>
+<p>
+<h2>About the Source Code</h2>
+The source code for this program is available at
+<a href="https://github.com/billf-pshs/n_body">https://github.com/billf-pshs/n_body</a>.
+If you're not familiar with Flutter and Github, all this can look a little
+intimidating at first.  The actual program is just one file,
+<a href="https://github.com/billf-pshs/n_body/blob/main/lib/main.dart"><code>lib/main.dart</code></a>.
+It's about 300 lines long.
+
+You might notice another source file:
+<a href="https://github.com/billf-pshs/n_body/blob/main/lib/graph.dart"><code>lib/graph.dart</code></a>.
+This is some code that was added for debugging.  It can display a graph of the velocity and
+acceleration of the orbiting bodies.  
+
+<h2>What's missing?</h2>
+<p>
+A lot is missing!  If you want to make this program better, grab a
+copy and start playing.  Some things to consider...
+
+<h3>Screen Size</h3>
+<p>
+You might notice that the app doesn't do anything intelligent about
+the screen size.  Maybe there should be a way to change the 
+scaling and scroll around,
+so you can find things when they zoom of the screen?
+
+<h3>Different Universes</h3>
+<p>
+Right now, there's just the one universe, with the Sun,
+the Earth, Saturn and a little green comet.  It would be
+nice to have other universes to pick from.
+
+<h3>Simulation Accuracy</h3>
+<p>
+One of the earlier simulations had four equivalent bodies
+that seem to behave the same way, until they don't.  We
+talked about how this is a result of the limited <i>precision</i>
+of the math that the computer does.  For example, the number
+2/3 is represented in the computer as about
+<code>0.66666666666666663</code>.  That's accurate to about 
+sixteen decimal digits, which is pretty good.  But we're
+re-calculating 10,000 times a second, so little errors add
+up.
+<p>
+This kind of problem comes up in the field of
+<a href="https://en.wikipedia.org/wiki/Numerical_analysis">Numerical
+Analysis</a>.
+One thing you can do is to try adding more precision.  Instead of
+numbers that are accurate to 16 decimal digits, you can try
+with numbers accurate to 50 digits, or 100, or 1000.  This
+might be an interesting thing to play with.  To do that, you'd
+probably want to find a software library that offers
+what's called <i>arbitrary precision</i> math operations.
+One that looks promising is
+<a href="https://pub.dev/packages/computable_reals"><code>computable_reals</code></a>.
+
+<h3>Game?</h3>
+<p>
+Maybe the orbit calculations could be made into a game, by adding a spaceship
+with a rocket whose force and direction can be controlled.
+
+<h3>Others?</h3>
+<p>
+The beauty of writing software is that you can make it do whatever
+you want!  All you need is a computer, some kind of development
+environment, time, and patience.  Many wonderful development 
+environments are available for free.  For Flutter,
+<a href="https://flutter.dev">https://flutter.dev</a> can point
+you to some.  If this little program seems fun, grab a copy and start
+modifying it!
 </body>
 </html>

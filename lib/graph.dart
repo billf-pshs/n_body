@@ -8,6 +8,10 @@ import 'package:jovial_misc/circular_buffer.dart';
 
 final graphData = [
   /*
+
+  To graph the velocity and acceleration of the four orbiting
+  bodies, un-comment these four statements:
+
   GraphData(Colors.black, CircularBuffer(Float32List(50000))), // x values
   GraphData(
       Colors.red.shade700, CircularBuffer(Float32List(50000))), // y values
