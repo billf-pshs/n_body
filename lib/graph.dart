@@ -6,6 +6,16 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:jovial_misc/circular_buffer.dart';
 
+/*
+ *  This file has some debugging code.  It can be used to draw a graph
+ *  of the position and acceleration of the different objects
+ *  orbiting around.
+ *
+ *  For someone doing numerical analysis, understanding the size of the
+ *  numbers being dealt with can be a big help.  A graph is a great
+ *  tool for this.
+ */
+
 final graphData = [
   /*
 
@@ -24,12 +34,20 @@ final graphData = [
    */
 ];
 
+/**
+ * A little data holder to hold the graph data for a single
+ * orbiting body's data along one axis.  We graph the points
+ * starting at the beginning of the points list.
+ */
 class GraphData {
   final Color color;
   final List<double> points;
   GraphData(this.color, this.points);
 }
 
+/**
+ * A widget to display a set of graphs.
+ */
 class Graph extends StatefulWidget {
   const Graph({super.key});
 
@@ -37,12 +55,19 @@ class Graph extends StatefulWidget {
   State<Graph> createState() => GraphState();
 }
 
+/**
+ * The real widget for displaying a graph, as required by the
+ * Flutter framework for widgets that hold information (also
+ * known of as "state".
+ **/
 class GraphState extends State<Graph> {
   late Timer timer;
 
   @override
   void initState() {
     super.initState();
+    // Update the displayed graph once a second.  Displaying a graph is
+    // pretty time-consuming, so we don't want to do this too often.
     timer = Timer.periodic(const Duration(milliseconds: 1000), (timer) {
       setState(() {});
     });
@@ -60,6 +85,16 @@ class GraphState extends State<Graph> {
     final xMin = xCoords.isEmpty ? 0 : xCoords.first.floor();
     return Padding(
         padding: const EdgeInsets.only(top: 12, right: 12),
+        //
+        // LineChart and LineChart Data are graphical widgets
+        // to display any kind of graph.  We set them up with
+        // properly-formatted data to display.
+        //
+        // No attempt was made to make this fast, and with 50,000
+        // points being graphed, it is, in fact, pretty slow.  With
+        // a little effort, this could be made much faster, for
+        // example by combining points.
+        //
         child: LineChart(LineChartData(
             minY: 0,
             maxY: 8,
@@ -78,6 +113,11 @@ class GraphState extends State<Graph> {
   }
 
   LineChartBarData makeBarData(GraphData xValues, GraphData yValues) {
+    //
+    // We graph the *logarithm* of the value.  These values have a big
+    // range; doing a logarithmic graph lets us see what's really going
+    // on when orbiting bodies get close to eachother.
+    //
     double f(double y) => log(y + 1) / ln10;
     final spots = List.generate(yValues.points.length,
         (i) => FlSpot(xValues.points[i], f(yValues.points[i])));
