@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 
 import 'graph.dart';
 
@@ -271,7 +272,8 @@ class _OrbitSceneState extends State<HomePage> {
 }
 
 class _OrbitScenePainter extends CustomPainter {
-  static final scale = (Platform.isAndroid || Platform.isIOS) ? .65 : 1.0;
+  static final scale =
+      (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) ? .65 : 1.0;
 
   final _OrbitSceneState _state;
 

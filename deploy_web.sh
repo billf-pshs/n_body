@@ -1,5 +1,5 @@
 #!/bin/bash -x
-flutter build web
+flutter build web --web-renderer canvaskit
 if [ $? != 0 ] ; then
     exit 1
 fi
