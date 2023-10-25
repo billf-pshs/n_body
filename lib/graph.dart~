@@ -22,6 +22,7 @@ final graphData = [
   To graph the velocity and acceleration of the four orbiting
   bodies, un-comment these four statements:
 
+   */
   GraphData(Colors.black, CircularBuffer(Float32List(50000))), // x values
   GraphData(
       Colors.red.shade700, CircularBuffer(Float32List(50000))), // y values
@@ -31,7 +32,6 @@ final graphData = [
       Colors.amber.shade700, CircularBuffer(Float32List(50000))), // y values
   GraphData(
       Colors.blue.shade700, CircularBuffer(Float32List(50000))), // y values
-   */
 ];
 
 /**
@@ -82,8 +82,7 @@ class GraphState extends State<Graph> {
   @override
   Widget build(BuildContext context) {
     final List<double> xCoords = graphData[0].points;
-    final double xMin =
-        xCoords.isEmpty ? 0 : (xCoords.first.floorToDouble() + 1);
+    final xMin = xCoords.isEmpty ? 0 : xCoords.first.floor();
     return Padding(
         padding: const EdgeInsets.only(top: 12, right: 12),
         //
@@ -96,27 +95,24 @@ class GraphState extends State<Graph> {
         // a little effort, this could be made much faster, for
         // example by combining points.
         //
-        child: LineChart(
-            LineChartData(
-                minY: 0,
-                maxY: 8,
-                minX: xMin,
-                maxX: xMin + 5,
-                titlesData: const FlTitlesData(
-                  rightTitles: AxisTitles(),
-                  topTitles: AxisTitles(),
-                ),
-                lineBarsData: [
-                  makeBarData(xMin, graphData[0], graphData[1]),
-                  makeBarData(xMin, graphData[0], graphData[2]),
-                  makeBarData(xMin, graphData[0], graphData[3]),
-                  makeBarData(xMin, graphData[0], graphData[4]),
-                ]),
-            duration: const Duration(seconds: 0)));
+        child: LineChart(LineChartData(
+            minY: 0,
+            maxY: 8,
+            minX: xMin + 0,
+            maxX: xMin + 5,
+            titlesData: const FlTitlesData(
+              rightTitles: AxisTitles(),
+              topTitles: AxisTitles(),
+            ),
+            lineBarsData: [
+              makeBarData(graphData[0], graphData[1]),
+              makeBarData(graphData[0], graphData[2]),
+              makeBarData(graphData[0], graphData[3]),
+              makeBarData(graphData[0], graphData[4]),
+            ])));
   }
 
-  LineChartBarData makeBarData(
-      final double xMin, GraphData xValues, GraphData yValues) {
+  LineChartBarData makeBarData(GraphData xValues, GraphData yValues) {
     //
     // We graph the *logarithm* of the value + 1.  These values have a big
     // range; doing a logarithmic graph lets us see what's really going
@@ -125,28 +121,22 @@ class GraphState extends State<Graph> {
     // the interesting part of the graph.
     //
     double f(double y) => log(y + 1) / ln10;
-    double deltaX = 0.05;
-    int r = max(2, (xValues.points.maxLines ~/ 1024 * 4));
+    int r = max(2, (xValues.points.maxLines ~/ 1024));
     // reduce factor, 1024 pixels of resolution in the x direction is plenty
     final spots = List<FlSpot>.empty(growable: true);
-    if (yValues.points.isNotEmpty) {
-      double minY = yValues.points[0];
+    for (int i = 0; i < (yValues.points.length + r - 1) ~/ r; i++) {
+      final start = i * r;
+      final end = min(start + r, yValues.points.length) - 1;
+      double minX = xValues.points[start];
+      double maxX = xValues.points[end];
+      double minY = yValues.points[start];
       double maxY = minY;
-      double lastX = (xValues.points[0] / deltaX).floorToDouble() * deltaX;
-      for (int i = 0; i < yValues.points.length; i++) {
-        bool done = (i == yValues.points.length - 1);
-        double x = (xValues.points[i] / deltaX).floorToDouble() * deltaX;
-        if (x > lastX || done) {
-          if (x >= xMin) {
-            spots.add(FlSpot(x, f(maxY)));
-          }
-          minY = maxY = yValues.points[i];
-          lastX = x;
-        } else {
-          minY = min(minY, yValues.points[i]);
-          maxY = max(maxY, yValues.points[i]);
-        }
+      for (int j = start + 1; j <= end; j++) {
+        minY = min(minY, yValues.points[j]);
+        maxY = max(maxY, yValues.points[j]);
       }
+      spots.add(FlSpot(minX, f(minY)));
+      spots.add(FlSpot(maxX, f(maxY)));
     }
     return LineChartBarData(
         spots: spots,
