@@ -204,14 +204,14 @@
     ></g
     ><g transform="translate(140,260)"
     ><path fill="none" d="M10.5 11.5 L10.5 80.5" clip-path="url(#clipPath12)"
-      /><path fill="white" d="M4 22.2583 L10.5 11 L17 22.2583 L10.5 33.0167 Z" clip-path="url(#clipPath12)" stroke="none"
+      /><path d="M4 22.2583 L10.5 11 L17 22.2583 L10.5 33.0167 Z" clip-path="url(#clipPath12)" stroke="none"
       /><path fill="none" d="M4 22.2583 L10.5 11 L17 22.2583 L10.5 33.0167 Z" clip-path="url(#clipPath12)"
       /><text x="14" font-size="14px" y="64" clip-path="url(#clipPath12)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >0..n</text
     ></g
     ><g transform="translate(440,100)"
     ><path fill="none" d="M10.5 11.5 L10.5 240.5" clip-path="url(#clipPath13)"
-      /><path fill="white" d="M4 22.2583 L10.5 11 L17 22.2583 L10.5 33.0167 Z" clip-path="url(#clipPath13)" stroke="none"
+      /><path d="M4 22.2583 L10.5 11 L17 22.2583 L10.5 33.0167 Z" clip-path="url(#clipPath13)" stroke="none"
       /><path fill="none" d="M4 22.2583 L10.5 11 L17 22.2583 L10.5 33.0167 Z" clip-path="url(#clipPath13)"
       /><text x="14" font-size="14px" y="224" clip-path="url(#clipPath13)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >0..n</text
@@ -221,14 +221,14 @@
     /></g
     ><g transform="translate(110,110)"
     ><path fill="none" d="M10.5 11.5 L10.5 70.5" clip-path="url(#clipPath15)"
-      /><path fill="white" d="M4 22.2583 L10.5 11 L17 22.2583 L10.5 33.0167 Z" clip-path="url(#clipPath15)" stroke="none"
+      /><path d="M4 22.2583 L10.5 11 L17 22.2583 L10.5 33.0167 Z" clip-path="url(#clipPath15)" stroke="none"
       /><path fill="none" d="M4 22.2583 L10.5 11 L17 22.2583 L10.5 33.0167 Z" clip-path="url(#clipPath15)"
       /><text x="14" font-size="14px" y="54" clip-path="url(#clipPath15)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >1</text
     ></g
     ><g transform="translate(220,40)"
     ><path fill="none" d="M11.5 10.5 L90.5 10.5" clip-path="url(#clipPath16)"
-      /><path fill="white" d="M22.2583 17 L11 10.5 L22.2583 4 L33.0167 10.5 Z" clip-path="url(#clipPath16)" stroke="none"
+      /><path d="M22.2583 17 L11 10.5 L22.2583 4 L33.0167 10.5 Z" clip-path="url(#clipPath16)" stroke="none"
       /><path fill="none" d="M22.2583 17 L11 10.5 L22.2583 4 L33.0167 10.5 Z" clip-path="url(#clipPath16)"
       /><path fill="none" d="M78.7417 17 L90 10.5 L78.7417 4" clip-path="url(#clipPath16)"
       /><text x="61.1475" font-size="14px" y="23.8174" clip-path="url(#clipPath16)" font-family="sans-serif" stroke="none" xml:space="preserve"

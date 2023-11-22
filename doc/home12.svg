@@ -121,14 +121,14 @@
     /></g
     ><g transform="translate(150,170)"
     ><path fill="none" d="M10.5 11.5 L10.5 120.5" clip-path="url(#clipPath8)"
-      /><path fill="white" d="M4 22.2583 L10.5 11 L17 22.2583 L10.5 33.0167 Z" clip-path="url(#clipPath8)" stroke="none"
+      /><path d="M4 22.2583 L10.5 11 L17 22.2583 L10.5 33.0167 Z" clip-path="url(#clipPath8)" stroke="none"
       /><path fill="none" d="M4 22.2583 L10.5 11 L17 22.2583 L10.5 33.0167 Z" clip-path="url(#clipPath8)"
       /><text x="14" font-size="14px" y="104" clip-path="url(#clipPath8)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >1</text
     ></g
     ><g transform="translate(260,50)"
     ><path fill="none" d="M11.5 10.5 L90.5 10.5" clip-path="url(#clipPath9)"
-      /><path fill="white" d="M22.2583 17 L11 10.5 L22.2583 4 L33.0167 10.5 Z" clip-path="url(#clipPath9)" stroke="none"
+      /><path d="M22.2583 17 L11 10.5 L22.2583 4 L33.0167 10.5 Z" clip-path="url(#clipPath9)" stroke="none"
       /><path fill="none" d="M22.2583 17 L11 10.5 L22.2583 4 L33.0167 10.5 Z" clip-path="url(#clipPath9)"
       /><text x="61.1475" font-size="14px" y="23.8174" clip-path="url(#clipPath9)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >1</text

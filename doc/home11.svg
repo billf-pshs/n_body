@@ -74,7 +74,7 @@
     ></g
     ><g transform="translate(260,80)"
     ><path fill="none" d="M11.5 10.5 L180.5 10.5" clip-path="url(#clipPath4)"
-      /><path fill="white" d="M22.2583 17 L11 10.5 L22.2583 4 L33.0167 10.5 Z" clip-path="url(#clipPath4)" stroke="none"
+      /><path d="M22.2583 17 L11 10.5 L22.2583 4 L33.0167 10.5 Z" clip-path="url(#clipPath4)" stroke="none"
       /><path fill="none" d="M22.2583 17 L11 10.5 L22.2583 4 L33.0167 10.5 Z" clip-path="url(#clipPath4)"
       /><text x="133.5996" font-size="14px" y="23.8174" clip-path="url(#clipPath4)" font-family="sans-serif" stroke="none" xml:space="preserve"
       >0..n</text
